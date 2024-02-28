@@ -1,0 +1,146 @@
+---
+title: "HW 7: Shiny 1"
+author: "YOUR NAME"
+date: "`r Sys.Date()`"
+output: html_document
+urlcolor: "blue"
+params:
+  solutions: FALSE
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo       = params$solutions, 
+                      eval       = params$solutions,
+                      fig.align  = "center",
+                      fig.height = 3, 
+                      fig.width  = 5)
+```
+
+# Instructions
+
+- Write your solutions in this starter file. You should modify the 
+  "author" field in the YAML header.
+- Place all of your Shiny code in this file. But make sure you have 
+  `eval = FALSE` in your code-chunk options so that you don't 
+  end up running the Shiny apps in the HTML file you generate.
+- Only commit R Markdown and HTML files (no PDF files). Make sure
+  you have knitted to HTML for your final submission.
+- **Make sure to commit each time you answer a question.**
+- Only include the necessary code, not any extraneous code, to answer the 
+  questions.
+- Learning objectives:
+    - Practice developing simple Shiny Apps.
+    
+1. (3 pts) Create a Shiny app that takes as input three variables from the 
+   `mpg` dataset from the `ggplot2` package. It will make a
+   scatterplot of two of the variables and color code by the third variable.
+   Make the default variables the ones in the image below. Your app 
+   should look like this:
+```{r eval=FALSE}
+library(shiny)
+library(ggplot2)
+
+ui <- fluidPage(
+    selectInput("var1", "X-Axis Variable", choices = names(mpg)),
+    selectInput("var2", "Y-Axis Variable", choices = names(mpg)),
+    selectInput("color_var", "Color Variable", choices = names(mpg)),
+    plotOutput("plot")
+)
+
+server <- function(input, output) {
+    output$plot <- renderPlot({
+        ggplot(mpg, aes(x = .data[[input$var1]], y = .data[[input$var2]], color = .data[[input$color_var]])) +
+            geom_point()
+    })
+}
+
+shinyApp(ui = ui, server = server)
+
+```
+
+    
+2. (3 pts) Create a [Mad Libs](https://en.wikipedia.org/wiki/Mad_Libs) Shiny App that
+   takes as input 4 or 5 words and returns a paragraph where those words are
+   populated inside specific locations of that paragraph. The inputs should
+   be a [part of speech](https://en.wikipedia.org/wiki/Part_of_speech)
+   (such as noun, verb, adjective, adverb, pronoun, preposition, 
+   conjunction, or interjection). 
+   
+    Here is my example (but be creative with yours!):
+
+```{r eval=FALSE}
+library(shiny)
+
+ui <- fluidPage(
+  titlePanel("Mad Libs Shiny App"),
+  sidebarLayout(
+    sidebarPanel(
+      textInput("noun", "Noun:", ""),
+      textInput("verb", "Verb:", ""),
+      textInput("adjective", "Adjective:", ""),
+      textInput("adverb", "Adverb:", ""),
+      textInput("pronoun", "Pronoun:", ""),
+      actionButton("generate", "Generate Mad Lib"),
+    ),
+    mainPanel(
+      textOutput("madlib_paragraph")
+    )
+  )
+)
+
+
+server <- function(input, output) {
+  
+
+  generate_madlib <- function() {
+    madlib_paragraph <- paste(
+      "The", input$noun, input$verb, "very", input$adjective,
+      "and", input$adverb, ". Suddenly,", input$pronoun, "decided to go",
+      "to the park, where they met a group of", input$noun, "who exclaimed, 'Wow!'"
+    )
+    return(madlib_paragraph)
+  }
+  
+  observeEvent(input$generate, {
+    madlib_text <- generate_madlib()
+    output$madlib_paragraph <- renderText(madlib_text)
+  })
+}
+
+shinyApp(ui = ui, server = server)
+
+
+# Noun:
+# Suggestions: "cat," "tree," "car," "book," "beach"
+# 
+# Verb:
+# Suggestions: "ran," "sang," "built," "danced," "swam"
+# 
+# Adjective:
+# Suggestions: "colorful," "mysterious," "tall," "delicious," "exciting"
+# 
+# Adverb:
+# Suggestions: "quickly," "silently," "joyfully," "carefully," "unexpectedly"
+# 
+# Pronoun:
+# Suggestions: "she," "he," "they," "it," "we"
+```
+
+3. (3 pts) Create a Shiny app that takes as input the variable from the `mtcars`
+   dataset to plot as well as the type of plot (histogram, density, or 
+   frequency polygon). Taking advantage of the 
+   modular nature of ggplot2 will make your life easier:
+   
+    ``` r
+    data("iris")
+    pl <- ggplot(iris, aes(x = Species))
+    pl
+    
+    pl <- pl + geom_bar()
+    pl
+    ```
+   
+    Your app should look like this:
+```{r eval=FALSE}
+
+```
